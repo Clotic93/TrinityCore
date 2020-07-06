@@ -14,6 +14,10 @@ cmake_minimum_required(VERSION 3.8)
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
+# path option for libs and boost
+set(BOOST_ROOT "Path to your boost root folder exmp C:/boost")
+set(C:/local/boost_1_72_0/libs"Path to your boost lib folder exmp C:/boost/libs")
+
 # Set projectname (must be done AFTER setting configurationtypes)
 project(TrinityCore)
 
