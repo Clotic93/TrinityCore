@@ -1381,7 +1381,7 @@ void ScriptMgr::OnGroupRateCalculation(float& rate, uint32 count, bool isRaid)
             MapEntry const* C = I->second->GetEntry(); \
             if (!C) \
                 continue; \
-            if (C->MapID == V->GetId()) \
+            if (C->ID == V->GetId()) \
             {
 
 #define SCR_MAP_END \
@@ -1575,6 +1575,24 @@ bool ScriptMgr::OnCastItemCombatSpell(Player* player, Unit* victim, SpellInfo co
     return tmpscript->OnCastItemCombatSpell(player, victim, spellInfo, item);
 }
 
+void ScriptMgr::OnGossipSelect(Player* player, Item* item, uint32 sender, uint32 action)
+{
+    ASSERT(player);
+    ASSERT(item);
+
+    GET_SCRIPT(ItemScript, item->GetScriptId(), tmpscript);
+    tmpscript->OnGossipSelect(player, item, sender, action);
+}
+
+void ScriptMgr::OnGossipSelectCode(Player* player, Item* item, uint32 sender, uint32 action, const char* code)
+{
+    ASSERT(player);
+    ASSERT(item);
+
+    GET_SCRIPT(ItemScript, item->GetScriptId(), tmpscript);
+    tmpscript->OnGossipSelectCode(player, item, sender, action, code);
+}
+
 CreatureAI* ScriptMgr::GetCreatureAI(Creature* creature)
 {
     ASSERT(creature);
@@ -1596,7 +1614,7 @@ bool ScriptMgr::OnAreaTrigger(Player* player, AreaTriggerEntry const* trigger)
     ASSERT(player);
     ASSERT(trigger);
 
-    GET_SCRIPT_RET(AreaTriggerScript, sObjectMgr->GetAreaTriggerScriptId(trigger->id), tmpscript, false);
+    GET_SCRIPT_RET(AreaTriggerScript, sObjectMgr->GetAreaTriggerScriptId(trigger->ID), tmpscript, false);
     return tmpscript->OnTrigger(player, trigger);
 }
 
@@ -1965,6 +1983,16 @@ void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newAre
     FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, newArea);
 }
 
+void ScriptMgr::OnGossipSelect(Player* player, uint32 menu_id, uint32 sender, uint32 action)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnGossipSelect(player, menu_id, sender, action);
+}
+
+void ScriptMgr::OnGossipSelectCode(Player* player, uint32 menu_id, uint32 sender, uint32 action, const char* code)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnGossipSelectCode(player, menu_id, sender, action, code);
+}
+
 void ScriptMgr::OnQuestStatusChange(Player* player, uint32 questId)
 {
     FOREACH_SCRIPT(PlayerScript)->OnQuestStatusChange(player, questId);
@@ -2228,7 +2256,7 @@ AreaTriggerScript::AreaTriggerScript(char const* name)
 
 bool OnlyOnceAreaTriggerScript::OnTrigger(Player* player, AreaTriggerEntry const* trigger)
 {
-    uint32 const triggerId = trigger->id;
+    uint32 const triggerId = trigger->ID;
     if (InstanceScript* instance = player->GetInstanceScript())
     {
         if (instance->IsAreaTriggerDone(triggerId))
@@ -2239,7 +2267,7 @@ bool OnlyOnceAreaTriggerScript::OnTrigger(Player* player, AreaTriggerEntry const
     return _OnTrigger(player, trigger);
 }
 void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(InstanceScript* script, uint32 triggerId) { script->ResetAreaTriggerDone(triggerId); }
-void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(Player const* player, AreaTriggerEntry const* trigger) { if (InstanceScript* instance = player->GetInstanceScript()) ResetAreaTriggerDone(instance, trigger->id); }
+void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(Player const* player, AreaTriggerEntry const* trigger) { if (InstanceScript* instance = player->GetInstanceScript()) ResetAreaTriggerDone(instance, trigger->ID); }
 
 BattlefieldScript::BattlefieldScript(char const* name)
         : ScriptObject(name)
